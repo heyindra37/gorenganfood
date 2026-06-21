@@ -5,8 +5,8 @@ import { verifyPassword, hashPassword } from '@/lib/auth/password'
 export async function GET() {
   const supabase = await createClient()
   const [settingsRes, goalsRes] = await Promise.all([
-    supabase.from('user_settings').select('*').eq('id', 1).single(),
-    supabase.from('user_goals').select('*').eq('id', 1).single(),
+    supabase.from('user_settings').select('*').eq('id', 1).maybeSingle(),
+    supabase.from('user_goals').select('*').eq('id', 1).maybeSingle(),
   ])
   return NextResponse.json({ settings: settingsRes.data, goals: goalsRes.data })
 }
@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest) {
 
   // Password change
   if (old_password && new_password) {
-    const { data } = await supabase.from('user_settings').select('hashed_password').eq('id', 1).single()
+    const { data } = await supabase.from('user_settings').select('hashed_password').eq('id', 1).maybeSingle()
     if (!data) return NextResponse.json({ error: 'Settings not found' }, { status: 404 })
     const valid = await verifyPassword(old_password, data.hashed_password)
     if (!valid) return NextResponse.json({ error: 'Password lama salah' }, { status: 401 })

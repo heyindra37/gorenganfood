@@ -6,7 +6,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ dat
   const supabase = await createClient()
 
   const [dailyLogRes, logItemsRes] = await Promise.all([
-    supabase.from('daily_logs').select('*').eq('log_date', date).single(),
+    supabase.from('daily_logs').select('*').eq('log_date', date).maybeSingle(),
     supabase.from('log_items').select('*').eq('log_date', date).order('logged_at'),
   ])
 

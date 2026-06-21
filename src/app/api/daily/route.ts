@@ -14,10 +14,10 @@ export async function GET() {
     const today = todayStr()
 
     const [settingsRes, dailyLogRes, logItemsRes, streakRes] = await Promise.all([
-      supabase.from('user_settings').select('*').eq('id', 1).single(),
-      supabase.from('daily_logs').select('*').eq('log_date', today).single(),
+      supabase.from('user_settings').select('*').eq('id', 1).maybeSingle(),
+      supabase.from('daily_logs').select('*').eq('log_date', today).maybeSingle(),
       supabase.from('log_items').select('*').eq('log_date', today).order('logged_at'),
-      supabase.from('streaks').select('*').eq('id', 1).single(),
+      supabase.from('streaks').select('*').eq('id', 1).maybeSingle(),
     ])
 
     let weeklyCredits = null
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     const today = todayStr()
 
-    const { data: settings } = await supabase.from('user_settings').select('*').eq('id', 1).single()
+    const { data: settings } = await supabase.from('user_settings').select('*').eq('id', 1).maybeSingle()
     if (!settings) return NextResponse.json({ error: 'Settings not found' }, { status: 404 })
 
     const s = settings as UserSettings
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       .from('log_items')
       .insert({ log_date: today, category, item_type, points_applied: pointsApplied, credit_used: creditUsed, note })
       .select()
-      .single()
+      .maybeSingle()
 
     if (liErr) return NextResponse.json({ error: liErr.message }, { status: 500 })
 
@@ -109,12 +109,12 @@ export async function POST(req: NextRequest) {
       await supabase.rpc('increment_xp', { amount: pointsApplied })
     }
 
-    const { data: streakData } = await supabase.from('streaks').select('*').eq('id', 1).single()
+    const { data: streakData } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
     let streak = streakData as Streak | null
 
     if (!streak) {
       await supabase.from('streaks').insert({ id: 1 })
-      const { data } = await supabase.from('streaks').select('*').eq('id', 1).single()
+      const { data } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
       streak = data as Streak
     }
 
@@ -124,11 +124,11 @@ export async function POST(req: NextRequest) {
         freeze_active_date: null,
         freeze_month: currentMonthKey(),
       }).eq('id', 1)
-      const { data } = await supabase.from('streaks').select('*').eq('id', 1).single()
+      const { data } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
       streak = data as Streak
     }
 
-    const { data: updatedDailyLog } = await supabase.from('daily_logs').select('*').eq('log_date', today).single()
+    const { data: updatedDailyLog } = await supabase.from('daily_logs').select('*').eq('log_date', today).maybeSingle()
 
     if (streak && updatedDailyLog) {
       const evalResult = evaluateStreak({ todayLog: updatedDailyLog as DailyLog, streak, settings: s })
@@ -167,10 +167,10 @@ export async function POST(req: NextRequest) {
       supabase.from('badges').select('*'),
       supabase.from('weight_logs').select('*'),
       supabase.from('fasting_sessions').select('*'),
-      supabase.from('user_goals').select('*').eq('id', 1).single(),
+      supabase.from('user_goals').select('*').eq('id', 1).maybeSingle(),
       supabase.from('daily_logs').select('*'),
       supabase.from('log_items').select('*'),
-      supabase.from('streaks').select('*').eq('id', 1).single(),
+      supabase.from('streaks').select('*').eq('id', 1).maybeSingle(),
     ])
 
     const newBadges = await checkAllBadges(supabase, {

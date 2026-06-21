@@ -11,9 +11,9 @@ export async function GET() {
 
   try {
     const supabase = await createClient()
-    const { data, error } = await supabase.from('user_settings').select('id, total_xp').eq('id', 1).single()
+    const { data, error } = await supabase.from('user_settings').select('id, total_xp').eq('id', 1).maybeSingle()
     checks.db_connection = error ? `❌ ${error.message}` : '✅ connected'
-    checks.user_settings = data ? `✅ found (xp: ${data.total_xp})` : '❌ no row found'
+    checks.user_settings = data ? `✅ found (xp: ${data.total_xp})` : '❌ no row found — go to /setup'
   } catch (e) {
     checks.db_connection = `❌ exception: ${e instanceof Error ? e.message : String(e)}`
   }

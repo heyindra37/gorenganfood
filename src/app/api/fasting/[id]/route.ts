@@ -6,7 +6,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const supabase = await createClient()
   const { end_reason } = await req.json()
 
-  const { data: session } = await supabase.from('fasting_sessions').select('started_at').eq('id', id).single()
+  const { data: session } = await supabase.from('fasting_sessions').select('started_at').eq('id', id).maybeSingle()
   if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
 
   const durationMinutes = Math.floor(

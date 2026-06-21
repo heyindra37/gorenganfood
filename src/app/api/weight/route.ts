@@ -5,7 +5,7 @@ export async function GET() {
   const supabase = await createClient()
   const [logsRes, goalsRes] = await Promise.all([
     supabase.from('weight_logs').select('*').order('log_date'),
-    supabase.from('user_goals').select('*').eq('id', 1).single(),
+    supabase.from('user_goals').select('*').eq('id', 1).maybeSingle(),
   ])
   return NextResponse.json({ logs: logsRes.data || [], goals: goalsRes.data })
 }

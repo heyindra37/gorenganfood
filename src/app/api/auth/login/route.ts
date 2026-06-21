@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     .from('user_settings')
     .select('hashed_password')
     .eq('id', 1)
-    .single()
+    .maybeSingle()
 
   if (!settings) {
     return NextResponse.json({ error: 'App belum disetup. Buka /setup terlebih dahulu.' }, { status: 404 })

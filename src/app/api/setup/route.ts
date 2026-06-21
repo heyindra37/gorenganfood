@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     .from('user_settings')
     .select('id')
     .eq('id', 1)
-    .single()
+    .maybeSingle()
 
   if (existing) {
     return NextResponse.json({ error: 'App sudah disetup sebelumnya' }, { status: 400 })

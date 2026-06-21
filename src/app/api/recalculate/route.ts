@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { fromDate } = await req.json()
 
-  const { data: settings } = await supabase.from('user_settings').select('*').eq('id', 1).single()
+  const { data: settings } = await supabase.from('user_settings').select('*').eq('id', 1).maybeSingle()
   if (!settings) return NextResponse.json({ error: 'Settings not found' }, { status: 500 })
 
   // Get all log_items from fromDate onwards (source of truth)
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   await supabase.from('user_settings').update({ total_xp: totalXp }).eq('id', 1)
 
   // Recompute streaks from scratch
-  const { data: streakData } = await supabase.from('streaks').select('*').eq('id', 1).single()
+  const { data: streakData } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
   let streak = streakData as Streak
 
   if (streak && shouldResetMonthlyFreeze(streak)) {
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       freeze_active_date: null,
       freeze_month: currentMonthKey(),
     }).eq('id', 1)
-    const { data } = await supabase.from('streaks').select('*').eq('id', 1).single()
+    const { data } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
     streak = data as Streak
   }
 

@@ -10,8 +10,8 @@ export async function GET() {
     const supabase = await createClient()
 
     const [streakRes, settingsRes] = await Promise.all([
-      supabase.from('streaks').select('*').eq('id', 1).single(),
-      supabase.from('user_settings').select('kredit_limit, darurat_limit').eq('id', 1).single(),
+      supabase.from('streaks').select('*').eq('id', 1).maybeSingle(),
+      supabase.from('user_settings').select('kredit_limit, darurat_limit').eq('id', 1).maybeSingle(),
     ])
 
     let weeklyCredits = null
@@ -28,7 +28,7 @@ export async function GET() {
         freeze_active_date: null,
         freeze_month: currentMonthKey(),
       }).eq('id', 1)
-      const { data } = await supabase.from('streaks').select('*').eq('id', 1).single()
+      const { data } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
       streak = data as Streak
     }
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     const { action } = await req.json()
 
     if (action === 'activate_freeze') {
-      const { data: streak } = await supabase.from('streaks').select('*').eq('id', 1).single()
+      const { data: streak } = await supabase.from('streaks').select('*').eq('id', 1).maybeSingle()
       const s = streak as Streak
       if (s?.freeze_used_this_month) {
         return NextResponse.json({ error: 'Freeze sudah dipakai bulan ini' }, { status: 400 })

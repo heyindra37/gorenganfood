@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const supabase = await createClient()
     const [activeRes, historyRes] = await Promise.all([
-      supabase.from('fasting_sessions').select('*').is('ended_at', null).order('started_at', { ascending: false }).limit(1).single(),
+      supabase.from('fasting_sessions').select('*').is('ended_at', null).order('started_at', { ascending: false }).limit(1).maybeSingle(),
       supabase.from('fasting_sessions').select('*').not('ended_at', 'is', null).order('started_at', { ascending: false }).limit(30),
     ])
     return NextResponse.json({ active: activeRes.data, history: historyRes.data || [] })
@@ -21,7 +21,7 @@ export async function POST() {
       .from('fasting_sessions')
       .select('*')
       .is('ended_at', null)
-      .single()
+      .maybeSingle()
 
     if (active) {
       const durationMinutes = Math.floor(
@@ -39,7 +39,7 @@ export async function POST() {
       .from('fasting_sessions')
       .insert({ started_at: new Date().toISOString() })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ started: true, session: data })
