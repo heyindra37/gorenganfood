@@ -42,7 +42,7 @@ export default function SetupPage() {
         toast.error(data.error || 'Setup gagal')
       } else {
         toast.success('Setup berhasil! Silakan login.')
-        router.push('/login')
+        window.location.href = '/login'
       }
     } finally {
       setLoading(false)

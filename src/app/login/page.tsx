@@ -21,8 +21,7 @@ export default function LoginPage() {
       if (!res.ok) {
         toast.error(data.error || 'Login gagal')
       } else {
-        router.push('/daily')
-        router.refresh()
+        window.location.href = '/daily'
       }
     } finally {
       setLoading(false)
