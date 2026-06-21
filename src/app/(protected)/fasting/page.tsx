@@ -15,13 +15,17 @@ export default function FastingPage() {
   const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/fasting')
-    const json = await res.json()
-    setData(json)
-    if (json.active) {
-      const secs = Math.floor((Date.now() - new Date(json.active.started_at).getTime()) / 1000)
-      setElapsed(secs)
-    }
+    try {
+      const res = await fetch('/api/fasting')
+      const json = await res.json()
+      if (res.ok) {
+        setData(json)
+        if (json.active) {
+          const secs = Math.floor((Date.now() - new Date(json.active.started_at).getTime()) / 1000)
+          setElapsed(secs)
+        }
+      }
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

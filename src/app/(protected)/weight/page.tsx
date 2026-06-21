@@ -12,10 +12,14 @@ export default function WeightPage() {
   const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/weight')
-    const json = await res.json()
-    setLogs(json.logs || [])
-    setGoals(json.goals)
+    try {
+      const res = await fetch('/api/weight')
+      const json = await res.json()
+      if (res.ok) {
+        setLogs(json.logs || [])
+        setGoals(json.goals)
+      }
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

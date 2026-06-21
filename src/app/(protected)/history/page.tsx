@@ -12,9 +12,11 @@ export default function HistoryPage() {
   const [deleting, setDeleting] = useState<string | null>(null)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/history-all')
-    const json = await res.json()
-    setLogs([...(json.logs || [])].reverse())
+    try {
+      const res = await fetch('/api/history-all')
+      const json = await res.json()
+      if (res.ok) setLogs([...(json.logs || [])].reverse())
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

@@ -8,9 +8,11 @@ export default function BadgesPage() {
   const [badges, setBadges] = useState<Badge[]>([])
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/badges')
-    const json = await res.json()
-    setBadges(json.badges || [])
+    try {
+      const res = await fetch('/api/badges')
+      const json = await res.json()
+      if (res.ok) setBadges(json.badges || [])
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

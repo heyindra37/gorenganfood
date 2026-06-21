@@ -9,9 +9,11 @@ export default function StreakPage() {
   const [loading, setLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/streak')
-    const json = await res.json()
-    setData(json)
+    try {
+      const res = await fetch('/api/streak')
+      const json = await res.json()
+      if (res.ok) setData(json)
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

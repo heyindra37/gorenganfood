@@ -20,9 +20,11 @@ export default function HeatmapPage() {
   const [logs, setLogs] = useState<DailyLog[]>([])
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/history-all')
-    const json = await res.json()
-    setLogs(json.logs || [])
+    try {
+      const res = await fetch('/api/history-all')
+      const json = await res.json()
+      if (res.ok) setLogs(json.logs || [])
+    } catch {}
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])

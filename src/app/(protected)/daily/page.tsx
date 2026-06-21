@@ -23,10 +23,19 @@ export default function DailyPage() {
   const [logging, setLogging] = useState<string | null>(null)
 
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/daily')
-    const json = await res.json()
-    setData(json)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/daily')
+      const json = await res.json()
+      if (!res.ok) {
+        toast.error(`Error: ${json.error || res.status}`)
+      } else {
+        setData(json)
+      }
+    } catch (err) {
+      toast.error(`Gagal memuat data: ${err instanceof Error ? err.message : 'Network error'}`)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
